@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For You 💖</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  background: linear-gradient(135deg, #ff9ecb, #ffc0cb);
+  font-family: 'Poppins', sans-serif;
+  overflow: hidden;
+}
+
+/* SURAT */
+.letter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 85%;
+  max-width: 400px;
+  background: #ffe4ec;
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 0 30px rgba(255, 105, 180, 0.6);
+  text-align: center;
+}
+
+/* PITA */
+.ribbon {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 90px;
+}
+
+/* TEXT */
+.text {
+  font-family: 'Great Vibes', cursive;
+  font-size: 26px;
+  color: #ff4d88;
+  min-height: 80px;
+}
+
+/* FOTO */
+.frame img {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 20px;
+  border: 5px solid white;
+  box-shadow: 0 0 15px pink;
+  margin-top: 10px;
+}
+
+/* VINYL */
+.vinyl {
+  margin-top: 10px;
+}
+
+.record {
+  width: 110px;
+  height: 110px;
+  background: black;
+  border-radius: 50%;
+  margin: auto;
+  position: relative;
+  animation: spin 5s linear infinite;
+}
+
+.record img {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.song-title {
+  font-size: 13px;
+  color: #ff4d88;
+  margin-top: 5px;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.paused {
+  animation-play-state: paused !important;
+}
+
+/* CONTROL */
+.controls button {
+  margin: 5px;
+  padding: 8px 12px;
+  border-radius: 50%;
+  border: none;
+  background: #ff4d88;
+  color: white;
+}
+
+/* BUTTON START */
+.startBtn {
+  margin-top: 15px;
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: none;
+  background: #ff4d88;
+  color: white;
+}
+
+/* LOVE */
+.heart {
+  position: absolute;
+  bottom: -10px;
+  animation: float 5s linear infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-100vh); opacity: 0; }
+}
+
+/* CREDIT (SUDAH FIX KELIATAN) */
+.credit {
+  position: fixed;
+  bottom: 20px;
+  width: 100%;
+  text-align: center;
+  font-size: 13px;
+  font-weight: bold;
+  background: linear-gradient(90deg, #ff1493, #ff69b4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 8px rgba(255, 20, 147, 0.6);
+  z-index: 999;
+}
+</style>
+</head>
+
+<body>
+
+<div class="letter">
+  <img class="ribbon" src="https://pngimg.com/uploads/ribbon/ribbon_PNG1549.png">
+
+  <div class="text" id="text">Klik dulu ya 💖</div>
+
+  <div class="frame">
+    <img id="photo" src="">
+  </div>
+
+  <div class="vinyl">
+    <div class="record" id="record">
+      <img id="cover">
+    </div>
+    <div class="song-title" id="songTitle"></div>
+
+    <div class="controls">
+      <button onclick="prevSong()">⏮</button>
+      <button onclick="togglePlay()" id="playBtn">⏸</button>
+      <button onclick="nextSong()">⏭</button>
+    </div>
+  </div>
+
+  <button class="startBtn" onclick="start()">Mulai 🎧</button>
+</div>
+
+<div class="credit">powered by danzz 💖</div>
+
+<audio id="music"></audio>
+
+<script>
+const music = document.getElementById("music");
+const cover = document.getElementById("cover");
+const title = document.getElementById("songTitle");
+const record = document.getElementById("record");
+const textEl = document.getElementById("text");
+const photo = document.getElementById("photo");
+const playBtn = document.getElementById("playBtn");
+
+const images = ["img/1.jpg","img/2.jpg","img/3.jpg"];
+
+const songs = [
+  {
+    file: "musik/lagu1.mp3",
+    title: "Bernaung - Feby Putri",
+    cover: "img/cover1.jpg"
+  },
+  {
+    file: "musik/lagu2.mp3",
+    title: "Negoro Angin - Denny Caknan",
+    cover: "img/cover2.jpg"
+  }
+];
+
+let currentSong = 0;
+
+const lyrics = [
+  { time: 3, text: "aku di sini..." },
+  { time: 7, text: "diam dalam rasa yang sama..." },
+  { time: 12, text: "aku ga banyak kata..." },
+  { time: 16, text: "tapi hati ini bicara..." },
+  { time: 21, text: "kamu berarti..." },
+  { time: 26, text: "lebih dari yang kamu tau..." },
+  { time: 32, text: "aku ga minta balasan..." },
+  { time: 37, text: "cukup kamu ngerti..." },
+  { time: 45, text: "aku suka kamu 💖" }
+];
+
+function loadSong(i) {
+  music.src = songs[i].file;
+  cover.src = songs[i].cover;
+  title.innerText = songs[i].title;
+}
+
+function nextSong() {
+  currentSong = (currentSong + 1) % songs.length;
+  loadSong(currentSong);
+  music.play();
+}
+
+function prevSong() {
+  currentSong = (currentSong - 1 + songs.length) % songs.length;
+  loadSong(currentSong);
+  music.play();
+}
+
+function togglePlay() {
+  if (music.paused) {
+    music.play();
+    playBtn.innerText = "⏸";
+    record.classList.remove("paused");
+  } else {
+    music.pause();
+    playBtn.innerText = "▶";
+    record.classList.add("paused");
+  }
+}
+
+function start() {
+  loadSong(currentSong);
+  music.play();
+  document.querySelector(".startBtn").style.display = "none";
+}
+
+music.addEventListener("timeupdate", () => {
+  let t = Math.floor(music.currentTime);
+  lyrics.forEach(l => {
+    if (t === l.time) {
+      textEl.innerText = l.text;
+    }
+  });
+});
+
+setInterval(() => {
+  photo.src = images[Math.floor(Math.random()*images.length)];
+}, 4000);
+
+setInterval(() => {
+  let h = document.createElement("div");
+  h.className = "heart";
+  h.innerText = "💖";
+  h.style.left = Math.random()*100+"vw";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),5000);
+},300);
+</script>
+
+</body>
+</html>
